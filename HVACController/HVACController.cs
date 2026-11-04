@@ -1,8 +1,8 @@
 namespace HVACController
 {
-    public partial class Form1 : Form
+    public partial class HVACController : Form
     {
-        public Form1()
+        public HVACController()
         {
             InitializeComponent();
         }
