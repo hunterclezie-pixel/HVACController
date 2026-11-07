@@ -57,15 +57,18 @@
             CoolingCheckBox = new CheckBox();
             MainMenuStrip = new MenuStrip();
             FileStripMenuItem = new ToolStripMenuItem();
-            SettingsMenuItem = new ToolStripMenuItem();
             SaveSettingsMenuItem = new ToolStripMenuItem();
             ExitMenuItem = new ToolStripMenuItem();
+            SettingsMenuItem = new ToolStripMenuItem();
             CommunicationMenuItem = new ToolStripMenuItem();
             PortsComboBox = new ToolStripComboBox();
             ConnectMenuItem = new ToolStripMenuItem();
             DisconnectMenuItem = new ToolStripMenuItem();
             HVACTimer = new System.Windows.Forms.Timer(components);
             CommunicationTimer = new System.Windows.Forms.Timer(components);
+            ConnectButton = new Button();
+            DisconnectButton = new Button();
+            ExirButton = new Button();
             MainMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -325,13 +328,6 @@
             FileStripMenuItem.Size = new Size(46, 24);
             FileStripMenuItem.Text = "File";
             // 
-            // SettingsMenuItem
-            // 
-            SettingsMenuItem.DropDownItems.AddRange(new ToolStripItem[] { CommunicationMenuItem });
-            SettingsMenuItem.Name = "SettingsMenuItem";
-            SettingsMenuItem.Size = new Size(76, 24);
-            SettingsMenuItem.Text = "Settings";
-            // 
             // SaveSettingsMenuItem
             // 
             SaveSettingsMenuItem.Name = "SaveSettingsMenuItem";
@@ -343,6 +339,13 @@
             ExitMenuItem.Name = "ExitMenuItem";
             ExitMenuItem.Size = new Size(180, 26);
             ExitMenuItem.Text = "Exit";
+            // 
+            // SettingsMenuItem
+            // 
+            SettingsMenuItem.DropDownItems.AddRange(new ToolStripItem[] { CommunicationMenuItem });
+            SettingsMenuItem.Name = "SettingsMenuItem";
+            SettingsMenuItem.Size = new Size(76, 24);
+            SettingsMenuItem.Text = "Settings";
             // 
             // CommunicationMenuItem
             // 
@@ -376,11 +379,41 @@
             // 
             CommunicationTimer.Interval = 10000;
             // 
+            // ConnectButton
+            // 
+            ConnectButton.Location = new Point(494, 400);
+            ConnectButton.Name = "ConnectButton";
+            ConnectButton.Size = new Size(94, 39);
+            ConnectButton.TabIndex = 27;
+            ConnectButton.Text = "Connect";
+            ConnectButton.UseVisualStyleBackColor = true;
+            // 
+            // DisconnectButton
+            // 
+            DisconnectButton.Location = new Point(594, 399);
+            DisconnectButton.Name = "DisconnectButton";
+            DisconnectButton.Size = new Size(94, 39);
+            DisconnectButton.TabIndex = 28;
+            DisconnectButton.Text = "Disconnect";
+            DisconnectButton.UseVisualStyleBackColor = true;
+            // 
+            // ExirButton
+            // 
+            ExirButton.Location = new Point(694, 399);
+            ExirButton.Name = "ExirButton";
+            ExirButton.Size = new Size(94, 39);
+            ExirButton.TabIndex = 29;
+            ExirButton.Text = "Exit";
+            ExirButton.UseVisualStyleBackColor = true;
+            // 
             // HVACController
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(ExirButton);
+            Controls.Add(DisconnectButton);
+            Controls.Add(ConnectButton);
             Controls.Add(CoolingCheckBox);
             Controls.Add(PressureCheckBox);
             Controls.Add(FanOnlyCheckBox);
@@ -408,7 +441,6 @@
             Controls.Add(RoomTempLabel);
             Controls.Add(ClockLabel);
             Controls.Add(MainMenuStrip);
-            MainMenuStrip = MainMenuStrip;
             Name = "HVACController";
             Text = "Form1";
             MainMenuStrip.ResumeLayout(false);
@@ -456,5 +488,8 @@
         private ToolStripMenuItem DisconnectMenuItem;
         private System.Windows.Forms.Timer HVACTimer;
         private System.Windows.Forms.Timer CommunicationTimer;
+        private Button ConnectButton;
+        private Button DisconnectButton;
+        private Button ExirButton;
     }
 }
