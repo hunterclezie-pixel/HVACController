@@ -12,9 +12,9 @@ namespace HVACController
             projectFolder = GetProjectFolder();
 
             // Menu and communication events
-            SaveSettingsStripMenuItem.Click += SaveSettingsStripMenuItem_Click;
-            ExitStripMenuItem.Click += ExitStripMenuItem_Click;
-            CommunicationSetupStripMenuItem.Click += CommunicationSetupStripMenuItem_Click;
+            SaveSettingsMenuItem.Click += SaveSettingsStripMenuItem_Click;
+            ExitMenuItem.Click += ExitButton_Click;
+            CommunicationMenuItem.Click += CommunicationSetupStripMenuItem_Click;
             PortsComboBox.DropDown += PortsComboBox_DropDown;
 
             // Mode and simulation controls
@@ -29,9 +29,9 @@ namespace HVACController
             UnitTempNumericUpDown.ValueChanged += SimulationInputChanged;
 
             // The three physical-switch checkboxes are indicators, not extra inputs
-            HeatSwitchCheckBox.AutoCheck = false;
-            FanSwitchCheckBox.AutoCheck = false;
-            CoolSwitchCheckBox.AutoCheck = false;
+            HeatingCheckBox.AutoCheck = false;
+            FanOnlyCheckBox.AutoCheck = false;
+            CoolingCheckBox.AutoCheck = false;
 
             // Start in real-board mode, with all outputs disabled
             SimulationCheckBox.Checked = false;
@@ -222,9 +222,9 @@ namespace HVACController
                 CommStatusLabel.Text = "QY@: Disconnected - retrying";
 
             // Mirror the physical inputs using the Designer indicators.
-            HeatSwitchCheckBox.Checked = heatSwitch;
-            FanSwitchCheckBox.Checked = fanSwitch;
-            CoolSwitchCheckBox.Checked = coolSwitch;
+            HeatingCheckBox.Checked = heatSwitch;
+            FanOnlyCheckBox.Checked = fanSwitch;
+            CoolingCheckBox.Checked = coolSwitch;
 
             if (!SimulationCheckBox.Checked)
             {
@@ -256,9 +256,9 @@ namespace HVACController
             FanOnCheckBox.Enabled = simulation && safetyHigh;
 
             // These show DI2, DI3, and DI5, rather than acting as extra switches.
-            HeatSwitchCheckBox.Enabled = false;
-            FanSwitchCheckBox.Enabled = false;
-            CoolSwitchCheckBox.Enabled = false;
+            HeatingCheckBox.Enabled = false;
+            FanOnlyCheckBox.Enabled = false;
+            CoolingCheckBox.Enabled = false;
         }
 
         // Reads the simulated inputs from the form controls and updates the internal variables
@@ -707,67 +707,194 @@ namespace HVACController
         // Event Handlers Below Here -------------------------------------------------------
         private void HeatPlusButton_Click(object sender, EventArgs e)
         {
-
+            if (heatSetpoint < 90)
+                heatSetpoint += 0.5;
+            UpdateSetpoints();
         }
 
         private void HeatMinusButton_Click(object sender, EventArgs e)
         {
-
+            if (heatSetpoint > 50)
+                heatSetpoint -= 0.5;
+            UpdateSetpoints();
         }
 
         private void CoolPlusButton_Click(object sender, EventArgs e)
         {
-
+            if (coolSetpoint < 90)
+                coolSetpoint += 0.5;
+            UpdateSetpoints();
         }
 
         private void CoolMinusButton_Click(object sender, EventArgs e)
         {
-
+            if (coolSetpoint > 50)
+                coolSetpoint -= 0.5;
+            UpdateSetpoints();
         }
 
-        private void ConnectButton_Click(object sender, EventArgs e)
+        private void ModeRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-
-        }
-
-        private void DisconnectButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ExirButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void HVACTimer_Tick(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CommunicationTimer_Tick(object sender, EventArgs e)
-        {
-
+            if (updatingDisplay || !SimulationCheckBox.Checked)
+                return;
+            ReadSimulationInputs();
+            ControlHVAC();
+            UpdateDisplay();
         }
 
         private void FanOnCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            if (updatingDisplay || !SimulationCheckBox.Checked)
+                return;
+            ReadSimulationInputs();
+            ControlHVAC();
+            UpdateDisplay();
+        }
 
+        private void SimulationInputChanged(object sender, EventArgs e)
+        {
+            if (updatingDisplay || !SimulationCheckBox.Checked)
+                return;
+            ReadSimulationInputs();
+            ControlHVAC();
+            UpdateDisplay();
         }
 
         private void SimulationCheckBox_CheckedChanged(object sender, EventArgs e)
         {
+            StopOutputs();
+            maintenanceFault = false;
+            ShowFault("");
 
+            if (SimulationCheckBox.Checked)
+            {
+                autoConnect = false;
+                DisconnectBoard(false);
+                SafetyCheckBox.Checked = true;
+                PressureCheckBox.Checked = true;
+                OffRadioButton.Checked = true;
+                FanOnCheckBox.Checked = false;
+                ReadSimulationInputs();
+            }
+            else
+            {
+                inputsValid = false;
+                safetyHigh = false;
+                pressureHigh = false;
+                heatSwitch = false;
+                coolSwitch = false;
+                fanSwitch = false;
+                autoConnect = true;
+                nextSearch = DateTime.MinValue;
+                SearchForBoard();
+            }
+
+            SetSimulationControls();
+            UpdateDisplay();
         }
 
-        private void SaveSettingsMenuItem_Click(object sender, EventArgs e)
+        private void SaveSettingsStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            SaveSettings();
         }
 
-        private void CommunicationMenuItem_Click(object sender, EventArgs e)
+        private void ExitStripMenuItem_Click(object sender, EventArgs e)
         {
+            this.Close();
+        }
 
+        private void CommunicationSetupStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UpdatePortList();
+            PortsComboBox.Focus();
+        }
+
+        private void PortsComboBox_DropDown(object sender, EventArgs e)
+        {
+            UpdatePortList();
+        }
+
+        private void ConnectButton_Click(object sender, EventArgs e)
+        {
+            selectedPort = PortsComboBox.Text;
+            if (string.IsNullOrWhiteSpace(selectedPort)) selectedPort = "Auto";
+
+            if (SimulationCheckBox.Checked)
+            {
+                // Switching simulation OFF starts the search automatically.
+                SimulationCheckBox.Checked = false;
+            }
+            else
+            {
+                autoConnect = true;
+                DisconnectBoard(false);
+                nextSearch = DateTime.MinValue;
+                SearchForBoard();
+            }
+        }
+
+        private void DisconnectButton_Click(object sender, EventArgs e)
+        {
+            autoConnect = false;
+            DisconnectBoard(false);
+            UpdateDisplay();
+        }
+
+        private void ExitButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void HVACTimer_Tick(object sender, EventArgs e)
+        {
+            if (closing) return;
+
+            if (SimulationCheckBox.Checked)
+            {
+                ReadSimulationInputs();
+                ControlHVAC();
+            }
+            else
+            {
+                if (autoConnect && !boardConnected && !boardSearching &&
+                    DateTime.Now >= nextSearch)
+                    SearchForBoard();
+
+                if (boardConnected)
+                {
+                    inputsValid = ReadHardwareInputs();
+                    if (inputsValid)
+                    {
+                        ControlHVAC();
+                        WriteHardwareOutputs();
+                    }
+                    else
+                    {
+                        DisconnectBoard(true);
+                    }
+                }
+                else
+                {
+                    inputsValid = false;
+                    StopOutputs();
+                    safetyHigh = false;
+                    pressureHigh = false;
+                    heatSwitch = false;
+                    coolSwitch = false;
+                    fanSwitch = false;
+                }
+            }
+            UpdateDisplay();
+        }
+
+        private void CommunicationTimer_Tick(object sender, EventArgs e)
+        {
+            if (closing || SimulationCheckBox.Checked) return;
+
+            if (boardConnected)
+                CheckBoard();
+            else if (autoConnect && !boardSearching && DateTime.Now >= nextSearch)
+                SearchForBoard();
         }
 
         private void HVACForm_FormClosing(object sender, FormClosingEventArgs e)
