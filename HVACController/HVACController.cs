@@ -429,6 +429,281 @@ namespace HVACController
             ShowFault("");
         }
 
+        // Logs a fault message to a daily log file in the project folder
+        void LogFault(string message)
+        {
+            try
+            {
+                string fileName = "HVACSystem-" + DateTime.Now.ToString("yyMMdd") + ".log";
+                string path = Path.Combine(projectFolder, fileName);
+                string line = DateTime.Now.ToString("yyMMdd-HHmmss") + ": " + message;
+                File.AppendAllText(path, line + Environment.NewLine);
+            }
+            catch (Exception ex)
+            {
+                FaultStatusLabel.Text = "Log file error: " + ex.Message;
+            }
+        }
+
+        // Log only when a new fault appears; do not write every timer tick.
+        void ShowFault(string message)
+        {
+            if (message == currentFault)
+                return;
+
+            currentFault = message;
+            if (message != "")
+                LogFault(message);
+        }
+
+        // Updates the COM port list in the dropdown menu
+        void UpdatePortList()
+        {
+            PortsComboBox.Items.Clear();
+            PortsComboBox.Items.Add("Auto");
+            try
+            {
+                foreach (string name in SerialPort.GetPortNames())
+                    PortsComboBox.Items.Add(name);
+            }
+            catch { }
+
+            PortsComboBox.SelectedItem = PortsComboBox.Items.Contains(selectedPort)
+                ? selectedPort : "Auto";
+        }
+
+        // QY@ ID check from the earlier SerialForm coursework.
+        bool VerifyBoard(SerialPort port)
+        {
+            try
+            {
+                port.DiscardInBuffer();
+                byte[] command = { 0xF0 };
+                port.Write(command, 0, command.Length);
+
+                byte[] reply = new byte[64];
+                int count = 0;
+                DateTime endTime = DateTime.Now.AddMilliseconds(900);
+
+                while (count < 64 && DateTime.Now < endTime && !closing)
+                {
+                    try
+                    {
+                        reply[count] = (byte)port.ReadByte();
+                        count++;
+                    }
+                    catch (TimeoutException) { }
+                }
+
+                return count == 64 && reply[58] == 81 &&
+                       reply[59] == 121 && reply[60] == 64;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Attempts to open a COM port and verify the QY@ board on it.
+        SerialPort TryPort(string name)
+        {
+            SerialPort port = new SerialPort(name, 9600, Parity.None, 8, StopBits.One);
+            try
+            {
+                port.ReadTimeout = 150;
+                port.WriteTimeout = 300;
+                port.Open();
+                Thread.Sleep(100);
+
+                if (VerifyBoard(port))
+                    return port;
+            }
+            catch { }
+
+            port.Dispose();
+            return null;
+        }
+
+        // Scans all available COM ports to find the QY@ board, returning a SerialPort object if found.
+        SerialPort FindBoard()
+        {
+            try
+            {
+                string[] ports = SerialPort.GetPortNames();
+
+                // Try the saved COM port first, then scan every other port.
+                if (selectedPort != "Auto" && Array.IndexOf(ports, selectedPort) >= 0)
+                {
+                    SerialPort preferred = TryPort(selectedPort);
+                    if (preferred != null) return preferred;
+                }
+
+                foreach (string name in ports)
+                {
+                    if (closing) break;
+                    if (name == selectedPort) continue;
+
+                    SerialPort found = TryPort(name);
+                    if (found != null) return found;
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        // Asynchronously searches for the QY@ board and updates the connection state.
+        async void SearchForBoard()
+        {
+            if (closing || boardSearching || boardConnected ||
+                SimulationCheckBox.Checked || !autoConnect)
+                return;
+
+            boardSearching = true;
+            SerialPort found = null;
+            try
+            {
+                found = await Task.Run(() => FindBoard());
+            }
+            catch { }
+            boardSearching = false;
+
+            if (closing || SimulationCheckBox.Checked || !autoConnect)
+            {
+                if (found != null) found.Dispose();
+                return;
+            }
+
+            if (found != null)
+            {
+                boardPort.Dispose();
+                boardPort = found;
+                boardConnected = true;
+                inputsValid = false;
+                StopOutputs();
+                WriteHardwareOutputs(); // Set verified active-high outputs OFF on connect.
+                if (boardConnected)
+                    ShowFault("");
+            }
+            else
+            {
+                nextSearch = DateTime.Now.AddSeconds(10);
+            }
+            UpdateDisplay();
+        }
+
+        // Check the Qy@ ID every 10 seconds on the same UI thread as the IO reads.
+        // This prevents two commands from trying to use the COM port at once.
+        void CheckBoard()
+        {
+            if (closing || !boardConnected || SimulationCheckBox.Checked)
+                return;
+
+            if (!VerifyBoard(boardPort))
+                DisconnectBoard(true);
+        }
+
+        // Disconnects the QY@ board and resets the connection state.
+        void DisconnectBoard(bool unexpected)
+        {
+            bool wasConnected = boardConnected;
+
+            // Attempt to turn verified active-high outputs OFF before closing.
+            // A disconnected or crashed program cannot guarantee an OFF state.
+            if (wasConnected && hardwareOutputsEnabled)
+            {
+                try
+                {
+                    byte[] offCommand = { 0x20, 0x00 };
+                    boardPort.Write(offCommand, 0, offCommand.Length);
+                }
+                catch { }
+            }
+
+            boardConnected = false;
+            inputsValid = false;
+            StopOutputs();
+
+            try { boardPort.Close(); }
+            catch { }
+
+            nextSearch = DateTime.Now.AddSeconds(10);
+            if (unexpected && wasConnected)
+                ShowFault("Communication lost with QY@ board - Attempting reconnect");
+            else
+                ShowFault("");
+        }
+
+        // ADC 0 = 40°F and ADC 1023 = 100°F, as required by the assignment.
+        double AdcToTemperature(int adc)
+        {
+            return 40.0 + adc * 60.0 / 1023.0;
+        }
+
+        // Read AN1, AN2, and all eight digital input bits in one USB transaction.
+        // 0x53 requests AN1 + AN2 (4 reply bytes).
+        // 0x30 requests the digital input byte (1 reply byte).
+        bool ReadHardwareInputs()
+        {
+            if (!boardConnected || !boardPort.IsOpen)
+                return false;
+
+            try
+            {
+                boardPort.DiscardInBuffer();
+                byte[] request = { 0x53, 0x30 };
+                boardPort.Write(request, 0, request.Length);
+
+                byte[] reply = new byte[5];
+                for (int i = 0; i < reply.Length; i++)
+                    reply[i] = (byte)boardPort.ReadByte();
+
+                // First byte is ADC bits 9-2; second byte holds bits 1-0.
+                int roomAdc = (reply[0] << 2) | (reply[1] >> 6);
+                int unitAdc = (reply[2] << 2) | (reply[3] >> 6);
+                byte inputs = reply[4];
+
+                roomTemperature = AdcToTemperature(roomAdc);
+                unitTemperature = AdcToTemperature(unitAdc);
+
+                safetyHigh = (inputs & 0x01) != 0;  // DI1
+                heatSwitch = (inputs & 0x02) != 0;  // DI2
+                fanSwitch = (inputs & 0x04) != 0;   // DI3
+                pressureHigh = (inputs & 0x08) != 0; // DI4
+                coolSwitch = (inputs & 0x10) != 0;  // DI5
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // The Qy@ write command uses 0x20 followed by an eight-bit output mask.
+        // This assumes DO1-DO5 are active HIGH and directly connected.
+        // Check the schematic, jumper positions, and isolation before enabling.
+        void WriteHardwareOutputs()
+        {
+            if (!boardConnected || !hardwareOutputsEnabled)
+                return;
+
+            byte outputs = 0x00;
+            if (warningOutput) outputs |= 0x01;  // DO1: Warning
+            if (heatOutput) outputs |= 0x02;     // DO2: Heating
+            if (fanOnlyOutput) outputs |= 0x04;  // DO3: Fan-only
+            if (fanOutput) outputs |= 0x08;      // DO4: Main fan
+            if (coolOutput) outputs |= 0x10;     // DO5: Cooling
+
+            try
+            {
+                byte[] command = { 0x20, outputs };
+                boardPort.Write(command, 0, command.Length);
+            }
+            catch
+            {
+                DisconnectBoard(true);
+            }
+        }
+
         // Event Handlers Below Here -------------------------------------------------------
         private void HeatPlusButton_Click(object sender, EventArgs e)
         {
