@@ -169,6 +169,77 @@ namespace HVACController
             }
         }
 
+        // Updates the heat and cool setpoint labels on the form
+        void UpdateSetpoints()
+        {
+            HeatSetpointLabel.Text = "Heat: " + heatSetpoint.ToString("F1") + "°F";
+            CoolSetpointLabel.Text = "Cool: " + coolSetpoint.ToString("F1") + "°F";
+        }
+
+        // Updates the indicator label text and background color based on the output state
+        void SetIndicator(Label label, string text, bool isOn)
+        {
+            label.Text = text + (isOn ? "ON" : "OFF");
+            label.BackColor = isOn ? RoarangeL : GrowlGreyLight;
+        }
+
+        // Updates the display labels and indicators on the form
+        void UpdateDisplay()
+        {
+            updatingDisplay = true;
+
+            ClockLabel.Text = DateTime.Now.ToString("hh:mm tt");
+            RoomTempLabel.Text = inputsValid ? roomTemperature.ToString("F1") + "°F" : "--.-°F";
+            UnitTempLabel.Text = inputsValid ? unitTemperature.ToString("F1") + "°F" : "--.-°F";
+            UpdateSetpoints();
+
+            string mode = heatSwitch ? "Heating" : coolSwitch ? "Cooling" : "Off";
+            if (heatSwitch && coolSwitch) mode = "Conflict";
+            ModeStatusLabel.Text = "Mode: " + mode;
+            FanModeLabel.Text = "Fan Mode: " + (fanSwitch ? "On" : "Auto");
+
+            // Show simulated outputs, or hardware outputs only when enabled.
+            bool outputsEnabled = SimulationCheckBox.Checked ||
+                (boardConnected && hardwareOutputsEnabled);
+            SetIndicator(HeatStatusLabel, "Heating: ", heatOutput && outputsEnabled);
+            SetIndicator(CoolStatusLabel, "Cooling: ", coolOutput && outputsEnabled);
+            SetIndicator(FanStatusLabel, "Fan: ", (fanOutput || fanOnlyOutput) && outputsEnabled);
+
+            FaultStatusLabel.Text = currentFault == "" ? "Fault: None" : "Fault: " + currentFault;
+            FaultStatusLabel.BackColor = currentFault == "" ? GrowlGreyLight : Color.MistyRose;
+
+            if (SimulationCheckBox.Checked)
+                CommStatusLabel.Text = "Simulation Mode - no hardware commands";
+            else if (boardConnected && !hardwareOutputsEnabled)
+                CommStatusLabel.Text = "QY@: Connected (" + boardPort.PortName + ") - outputs disabled";
+            else if (boardConnected)
+                CommStatusLabel.Text = "QY@: Connected (" + boardPort.PortName + ")";
+            else if (boardSearching)
+                CommStatusLabel.Text = "QY@: Searching...";
+            else if (!autoConnect)
+                CommStatusLabel.Text = "QY@: Manually disconnected";
+            else
+                CommStatusLabel.Text = "QY@: Disconnected - retrying";
+
+            // Mirror the physical inputs using the Designer indicators.
+            HeatSwitchCheckBox.Checked = heatSwitch;
+            FanSwitchCheckBox.Checked = fanSwitch;
+            CoolSwitchCheckBox.Checked = coolSwitch;
+
+            if (!SimulationCheckBox.Checked)
+            {
+                SafetyCheckBox.Checked = safetyHigh;
+                PressureCheckBox.Checked = pressureHigh;
+                HeatRadioButton.Checked = heatSwitch;
+                CoolRadioButton.Checked = coolSwitch;
+                OffRadioButton.Checked = !heatSwitch && !coolSwitch;
+                FanOnCheckBox.Checked = fanSwitch;
+            }
+
+            updatingDisplay = false;
+            SetSimulationControls();
+        }
+
         // Event Handlers Below Here -------------------------------------------------------
         private void HeatPlusButton_Click(object sender, EventArgs e)
         {
