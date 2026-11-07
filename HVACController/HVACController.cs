@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO.Ports;
 
 
@@ -43,7 +44,6 @@ namespace HVACController
             SetSimulationControls();
             UpdateSetpoints();
             UpdateDisplay();
-
             HVACTimer.Start();
             CommunicationTimer.Start();
         }
@@ -51,7 +51,6 @@ namespace HVACController
         // Global Variables Below Here -------------------------------------------------------
         Color GrowlGreyLight = Color.FromArgb(230, 231, 232);
         Color RoarangeL = Color.FromArgb(246, 146, 64);
-
         SerialPort boardPort = new SerialPort();
         bool boardConnected = false;
 
@@ -93,6 +92,82 @@ namespace HVACController
         string currentFault = "";
         string projectFolder = "";
 
+        // Methods Below Here --------------------------------------------------------------
+
+        // Finds the Visual Studio project folder (or the application folder)
+        string GetProjectFolder()
+        {
+            DirectoryInfo folder = new DirectoryInfo(Application.StartupPath);
+
+            for (int i = 0; i < 6 && folder != null; i++)
+            {
+                if (folder.GetFiles("*.csproj").Length > 0)
+                    return folder.FullName;
+
+                folder = folder.Parent;
+            }
+            return Application.StartupPath;
+        }
+
+        // Saves the current settings to a text file in the project folder
+        void SaveSettings(bool showMessage = true)
+        {
+            try
+            {
+                string fileName = Path.Combine(projectFolder, "HVAC Settings");
+                string[] settings =
+                {
+                    "COM=" + selectedPort,
+                    "Heat=" + heatSetpoint.ToString("F1", CultureInfo.InvariantCulture),
+                    "Cool=" + coolSetpoint.ToString("F1", CultureInfo.InvariantCulture)
+                };
+                File.WriteAllLines(fileName, settings);
+
+                if (showMessage)
+                    MessageBox.Show("Settings saved to:\n" + fileName);
+            }
+            catch (Exception ex)
+            {
+                if (showMessage)
+                    MessageBox.Show("Could not save settings: " + ex.Message);
+            }
+        }
+
+        // Loads the settings from a text file in the project folder
+        void LoadSettings()
+        {
+            string fileName = Path.Combine(projectFolder, "HVAC Settings");
+            if (!File.Exists(fileName))
+                return;
+
+            try
+            {
+                foreach (string line in File.ReadAllLines(fileName))
+                {
+                    string[] parts = line.Split('=', 2);
+                    if (parts.Length != 2)
+                        continue;
+
+                    if (parts[0] == "COM")
+                        selectedPort = parts[1];
+
+                    if (parts[0] == "Heat" && double.TryParse(parts[1], NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out double heat))
+                        heatSetpoint = heat;
+
+                    if (parts[0] == "Cool" && double.TryParse(parts[1], NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out double cool))
+                        coolSetpoint = cool;
+                }
+
+                heatSetpoint = Math.Max(50, Math.Min(90, heatSetpoint));
+                coolSetpoint = Math.Max(50, Math.Min(90, coolSetpoint));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not load settings: " + ex.Message);
+            }
+        }
 
         // Event Handlers Below Here -------------------------------------------------------
         private void HeatPlusButton_Click(object sender, EventArgs e)
