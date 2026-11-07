@@ -240,6 +240,195 @@ namespace HVACController
             SetSimulationControls();
         }
 
+        // Enables or disables the simulation controls based on the Simulation checkbox
+        void SetSimulationControls()
+        {
+            bool simulation = SimulationCheckBox.Checked;
+
+            SafetyCheckBox.Enabled = simulation;
+            PressureCheckBox.Enabled = simulation;
+            RoomTempNumericUpDown.Enabled = simulation;
+            UnitTempNumericUpDown.Enabled = simulation;
+
+            HeatRadioButton.Enabled = simulation && safetyHigh;
+            CoolRadioButton.Enabled = simulation && safetyHigh;
+            OffRadioButton.Enabled = simulation && safetyHigh;
+            FanOnCheckBox.Enabled = simulation && safetyHigh;
+
+            // These show DI2, DI3, and DI5, rather than acting as extra switches.
+            HeatSwitchCheckBox.Enabled = false;
+            FanSwitchCheckBox.Enabled = false;
+            CoolSwitchCheckBox.Enabled = false;
+        }
+
+        // Reads the simulated inputs from the form controls and updates the internal variables
+        void ReadSimulationInputs()
+        {
+            safetyHigh = SafetyCheckBox.Checked;
+            pressureHigh = PressureCheckBox.Checked;
+            heatSwitch = HeatRadioButton.Checked;
+            coolSwitch = CoolRadioButton.Checked;
+            fanSwitch = FanOnCheckBox.Checked;
+            roomTemperature = (double)RoomTempNumericUpDown.Value;
+            unitTemperature = (double)UnitTempNumericUpDown.Value;
+            inputsValid = true;
+        }
+
+        // Resets all outputs and internal state variables to their default values
+        void StopOutputs()
+        {
+            warningOutput = false;
+            heatOutput = false;
+            fanOnlyOutput = false;
+            fanOutput = false;
+            coolOutput = false;
+            heatDemand = false;
+            coolDemand = false;
+            pressureVerified = false;
+            fanStarted = DateTime.MinValue;
+            fanUntil = DateTime.MinValue;
+            nextPressureCheck = DateTime.MinValue;
+            nextTemperatureCheck = DateTime.MinValue;
+        }
+
+        // 2°F hysteresis, 5-second fan lead/overrun, and sensor checks.
+        void ControlHVAC()
+        {
+            DateTime now = DateTime.Now;
+
+            if (!inputsValid)
+            {
+                StopOutputs();
+                return;
+            }
+
+            if (!safetyHigh)
+            {
+                StopOutputs();
+                warningOutput = true;
+                ShowFault("Safety interlock switch LOW - Heating/Cooling/Fan disabled");
+                return;
+            }
+
+            if (heatSwitch && coolSwitch)
+            {
+                StopOutputs();
+                warningOutput = true;
+                ShowFault("Both heating and cooling switches HIGH - Select one mode");
+                return;
+            }
+
+            // Switching both modes OFF clears the maintenance latch after service.
+            if (!heatSwitch && !coolSwitch)
+                maintenanceFault = false;
+
+            if (maintenanceFault)
+            {
+                if (heatOutput || coolOutput)
+                    fanUntil = now.AddSeconds(5);
+
+                heatOutput = false;
+                coolOutput = false;
+                fanOnlyOutput = fanSwitch;
+                fanOutput = fanSwitch || now < fanUntil;
+                if (!fanOutput) fanStarted = DateTime.MinValue;
+                ShowFault("System temperature verification failed - Maintenance required");
+                return;
+            }
+
+            // Heating: start at setpoint - 2, stop at setpoint.
+            if (!heatSwitch)
+                heatDemand = false;
+            else if (heatDemand)
+                heatDemand = roomTemperature < heatSetpoint;
+            else
+                heatDemand = roomTemperature <= heatSetpoint - 2;
+
+            // Cooling: start at setpoint + 2, stop at setpoint.
+            if (!coolSwitch)
+                coolDemand = false;
+            else if (coolDemand)
+                coolDemand = roomTemperature > coolSetpoint;
+            else
+                coolDemand = roomTemperature >= coolSetpoint + 2;
+
+            bool wasHeating = heatOutput;
+            bool wasCooling = coolOutput;
+
+            if ((wasHeating && !heatDemand) || (wasCooling && !coolDemand))
+                fanUntil = now.AddSeconds(5);
+
+            heatOutput = false;
+            coolOutput = false;
+            fanOnlyOutput = fanSwitch;
+
+            bool fanNeeded = fanSwitch || heatDemand || coolDemand || now < fanUntil;
+            fanOutput = fanNeeded;
+
+            if (fanNeeded && fanStarted == DateTime.MinValue)
+            {
+                fanStarted = now;
+                nextPressureCheck = now.AddSeconds(5);
+                pressureVerified = false;
+            }
+            if (!fanNeeded)
+            {
+                fanStarted = DateTime.MinValue;
+                pressureVerified = false;
+                nextPressureCheck = DateTime.MinValue;
+                ShowFault("");
+                return;
+            }
+
+            // Stop heating/cooling immediately if pressure becomes LOW.
+            if (!pressureHigh)
+            {
+                pressureVerified = false;
+                nextPressureCheck = now;
+                if (wasHeating || wasCooling)
+                    fanUntil = now.AddSeconds(5);
+
+                if (now >= fanStarted.AddSeconds(5))
+                    ShowFault("Differential pressure sensor LOW - Maintenance required");
+                return;
+            }
+
+            // Verify pressure after the first 5 seconds and every 2 minutes.
+            if (now >= fanStarted.AddSeconds(5) && now >= nextPressureCheck)
+            {
+                pressureVerified = pressureHigh;
+                nextPressureCheck = now.AddMinutes(2);
+            }
+
+            // Wait for the fan to run 5 seconds before energizing either unit.
+            if ((heatDemand || coolDemand) && pressureVerified &&
+                now >= fanStarted.AddSeconds(5))
+            {
+                heatOutput = heatDemand;
+                coolOutput = coolDemand;
+
+                if ((!wasHeating && heatOutput) || (!wasCooling && coolOutput))
+                    nextTemperatureCheck = now.AddSeconds(30);
+
+                // Verify the unit air temperature every 30 seconds while running.
+                if (now >= nextTemperatureCheck)
+                {
+                    nextTemperatureCheck = now.AddSeconds(30);
+                    if ((heatOutput && unitTemperature <= roomTemperature) ||
+                        (coolOutput && unitTemperature >= roomTemperature))
+                    {
+                        heatOutput = false;
+                        coolOutput = false;
+                        maintenanceFault = true;
+                        fanUntil = now.AddSeconds(5);
+                        ShowFault("System temperature verification failed - Maintenance required");
+                        return;
+                    }
+                }
+            }
+            ShowFault("");
+        }
+
         // Event Handlers Below Here -------------------------------------------------------
         private void HeatPlusButton_Click(object sender, EventArgs e)
         {
