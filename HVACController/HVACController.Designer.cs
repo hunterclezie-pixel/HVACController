@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            PictureBox BennEPictureBox;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HVACController));
             ClockLabel = new Label();
             RoomTempLabel = new Label();
             UnitTempLabel = new Label();
@@ -44,8 +46,6 @@
             FanStatusLabel = new Label();
             HeatStatusLabel = new Label();
             CoolStatusLabel = new Label();
-            SafetyStatusLabel = new Label();
-            PressureStatusLabel = new Label();
             FaultStatusLabel = new Label();
             CommStatusLabel = new Label();
             MaintenanceLabel = new Label();
@@ -69,36 +69,57 @@
             DisconnectButton = new Button();
             ExitButton = new Button();
             SimulationGroupBox = new GroupBox();
+            SimulatedTempLabel = new Label();
+            UnitTempNumericUpDown = new NumericUpDown();
             SimulationCheckBox = new CheckBox();
+            RoomTempNumericUpDown = new NumericUpDown();
             HeatRadioButton = new RadioButton();
             CoolRadioButton = new RadioButton();
             OffRadioButton = new RadioButton();
             FanOnCheckBox = new CheckBox();
             PortsComboBox = new ComboBox();
             OperatingModeGroupBox = new GroupBox();
-            RoomTempNumericUpDown = new NumericUpDown();
-            UnitTempNumericUpDown = new NumericUpDown();
-            SimulatedTempLabel = new Label();
+            TemperatureGroupBox = new GroupBox();
+            OperationGroupBox = new GroupBox();
+            GearPictureBox = new PictureBox();
+            ConnectionGroupBox = new GroupBox();
+            BennEPictureBox = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)BennEPictureBox).BeginInit();
             MainMenuStrip.SuspendLayout();
             SimulationGroupBox.SuspendLayout();
-            OperatingModeGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)RoomTempNumericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)UnitTempNumericUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)RoomTempNumericUpDown).BeginInit();
+            OperatingModeGroupBox.SuspendLayout();
+            TemperatureGroupBox.SuspendLayout();
+            OperationGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)GearPictureBox).BeginInit();
+            ConnectionGroupBox.SuspendLayout();
             SuspendLayout();
+            // 
+            // BennEPictureBox
+            // 
+            BennEPictureBox.Image = (Image)resources.GetObject("BennEPictureBox.Image");
+            BennEPictureBox.Location = new Point(639, 193);
+            BennEPictureBox.Name = "BennEPictureBox";
+            BennEPictureBox.Size = new Size(149, 149);
+            BennEPictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            BennEPictureBox.TabIndex = 39;
+            BennEPictureBox.TabStop = false;
             // 
             // ClockLabel
             // 
             ClockLabel.AutoSize = true;
-            ClockLabel.Location = new Point(262, 345);
+            ClockLabel.Location = new Point(70, 326);
             ClockLabel.Name = "ClockLabel";
             ClockLabel.Size = new Size(44, 20);
             ClockLabel.TabIndex = 0;
             ClockLabel.Text = "12:00";
+            ClockLabel.Click += ClockLabel_Click;
             // 
             // RoomTempLabel
             // 
             RoomTempLabel.AutoSize = true;
-            RoomTempLabel.Location = new Point(16, 64);
+            RoomTempLabel.Location = new Point(13, 28);
             RoomTempLabel.Name = "RoomTempLabel";
             RoomTempLabel.Size = new Size(96, 20);
             RoomTempLabel.TabIndex = 1;
@@ -107,7 +128,7 @@
             // UnitTempLabel
             // 
             UnitTempLabel.AutoSize = true;
-            UnitTempLabel.Location = new Point(112, 64);
+            UnitTempLabel.Location = new Point(13, 59);
             UnitTempLabel.Name = "UnitTempLabel";
             UnitTempLabel.Size = new Size(83, 20);
             UnitTempLabel.TabIndex = 2;
@@ -116,7 +137,7 @@
             // CurrentSetpointLabel
             // 
             CurrentSetpointLabel.AutoSize = true;
-            CurrentSetpointLabel.Location = new Point(16, 90);
+            CurrentSetpointLabel.Location = new Point(13, 90);
             CurrentSetpointLabel.Name = "CurrentSetpointLabel";
             CurrentSetpointLabel.Size = new Size(164, 20);
             CurrentSetpointLabel.TabIndex = 3;
@@ -125,7 +146,7 @@
             // HeatSetpointLabel
             // 
             HeatSetpointLabel.AutoSize = true;
-            HeatSetpointLabel.Location = new Point(12, 157);
+            HeatSetpointLabel.Location = new Point(63, 128);
             HeatSetpointLabel.Name = "HeatSetpointLabel";
             HeatSetpointLabel.Size = new Size(88, 20);
             HeatSetpointLabel.TabIndex = 5;
@@ -134,7 +155,7 @@
             // CoolSetpointLabel
             // 
             CoolSetpointLabel.AutoSize = true;
-            CoolSetpointLabel.Location = new Point(112, 157);
+            CoolSetpointLabel.Location = new Point(63, 214);
             CoolSetpointLabel.Name = "CoolSetpointLabel";
             CoolSetpointLabel.Size = new Size(87, 20);
             CoolSetpointLabel.TabIndex = 6;
@@ -142,7 +163,7 @@
             // 
             // HeatPlusButton
             // 
-            HeatPlusButton.Location = new Point(12, 180);
+            HeatPlusButton.Location = new Point(9, 151);
             HeatPlusButton.Name = "HeatPlusButton";
             HeatPlusButton.Size = new Size(94, 45);
             HeatPlusButton.TabIndex = 7;
@@ -152,7 +173,7 @@
             // 
             // HeatMinusButton
             // 
-            HeatMinusButton.Location = new Point(12, 231);
+            HeatMinusButton.Location = new Point(109, 151);
             HeatMinusButton.Name = "HeatMinusButton";
             HeatMinusButton.Size = new Size(94, 45);
             HeatMinusButton.TabIndex = 8;
@@ -162,7 +183,7 @@
             // 
             // CoolPlusButton
             // 
-            CoolPlusButton.Location = new Point(112, 180);
+            CoolPlusButton.Location = new Point(9, 237);
             CoolPlusButton.Name = "CoolPlusButton";
             CoolPlusButton.Size = new Size(94, 45);
             CoolPlusButton.TabIndex = 9;
@@ -172,7 +193,7 @@
             // 
             // CoolMinusButton
             // 
-            CoolMinusButton.Location = new Point(112, 231);
+            CoolMinusButton.Location = new Point(109, 237);
             CoolMinusButton.Name = "CoolMinusButton";
             CoolMinusButton.Size = new Size(94, 45);
             CoolMinusButton.TabIndex = 10;
@@ -183,7 +204,7 @@
             // ModeStatusLabel
             // 
             ModeStatusLabel.AutoSize = true;
-            ModeStatusLabel.Location = new Point(11, 149);
+            ModeStatusLabel.Location = new Point(6, 23);
             ModeStatusLabel.Name = "ModeStatusLabel";
             ModeStatusLabel.Size = new Size(80, 20);
             ModeStatusLabel.TabIndex = 11;
@@ -192,7 +213,7 @@
             // FanModeLabel
             // 
             FanModeLabel.AutoSize = true;
-            FanModeLabel.Location = new Point(11, 169);
+            FanModeLabel.Location = new Point(6, 46);
             FanModeLabel.Name = "FanModeLabel";
             FanModeLabel.Size = new Size(119, 20);
             FanModeLabel.TabIndex = 12;
@@ -201,7 +222,7 @@
             // FanStatusLabel
             // 
             FanStatusLabel.AutoSize = true;
-            FanStatusLabel.Location = new Point(11, 189);
+            FanStatusLabel.Location = new Point(7, 69);
             FanStatusLabel.Name = "FanStatusLabel";
             FanStatusLabel.Size = new Size(63, 20);
             FanStatusLabel.TabIndex = 13;
@@ -210,7 +231,7 @@
             // HeatStatusLabel
             // 
             HeatStatusLabel.AutoSize = true;
-            HeatStatusLabel.Location = new Point(11, 210);
+            HeatStatusLabel.Location = new Point(6, 92);
             HeatStatusLabel.Name = "HeatStatusLabel";
             HeatStatusLabel.Size = new Size(94, 20);
             HeatStatusLabel.TabIndex = 14;
@@ -219,34 +240,16 @@
             // CoolStatusLabel
             // 
             CoolStatusLabel.AutoSize = true;
-            CoolStatusLabel.Location = new Point(11, 230);
+            CoolStatusLabel.Location = new Point(7, 114);
             CoolStatusLabel.Name = "CoolStatusLabel";
             CoolStatusLabel.Size = new Size(93, 20);
             CoolStatusLabel.TabIndex = 15;
             CoolStatusLabel.Text = "Cooling: OFF";
             // 
-            // SafetyStatusLabel
-            // 
-            SafetyStatusLabel.AutoSize = true;
-            SafetyStatusLabel.Location = new Point(312, 356);
-            SafetyStatusLabel.Name = "SafetyStatusLabel";
-            SafetyStatusLabel.Size = new Size(42, 20);
-            SafetyStatusLabel.TabIndex = 16;
-            SafetyStatusLabel.Text = "SAFE";
-            // 
-            // PressureStatusLabel
-            // 
-            PressureStatusLabel.AutoSize = true;
-            PressureStatusLabel.Location = new Point(312, 376);
-            PressureStatusLabel.Name = "PressureStatusLabel";
-            PressureStatusLabel.Size = new Size(29, 20);
-            PressureStatusLabel.TabIndex = 17;
-            PressureStatusLabel.Text = "OK";
-            // 
             // FaultStatusLabel
             // 
             FaultStatusLabel.AutoSize = true;
-            FaultStatusLabel.Location = new Point(312, 401);
+            FaultStatusLabel.Location = new Point(306, 70);
             FaultStatusLabel.Name = "FaultStatusLabel";
             FaultStatusLabel.Size = new Size(75, 20);
             FaultStatusLabel.TabIndex = 18;
@@ -255,7 +258,7 @@
             // CommStatusLabel
             // 
             CommStatusLabel.AutoSize = true;
-            CommStatusLabel.Location = new Point(12, 345);
+            CommStatusLabel.Location = new Point(306, 18);
             CommStatusLabel.Name = "CommStatusLabel";
             CommStatusLabel.Size = new Size(99, 20);
             CommStatusLabel.TabIndex = 19;
@@ -264,7 +267,7 @@
             // MaintenanceLabel
             // 
             MaintenanceLabel.AutoSize = true;
-            MaintenanceLabel.Location = new Point(312, 421);
+            MaintenanceLabel.Location = new Point(306, 43);
             MaintenanceLabel.Name = "MaintenanceLabel";
             MaintenanceLabel.Size = new Size(110, 20);
             MaintenanceLabel.TabIndex = 20;
@@ -340,13 +343,13 @@
             // SaveSettingsMenuItem
             // 
             SaveSettingsMenuItem.Name = "SaveSettingsMenuItem";
-            SaveSettingsMenuItem.Size = new Size(180, 26);
+            SaveSettingsMenuItem.Size = new Size(224, 26);
             SaveSettingsMenuItem.Text = "Save Settings";
             // 
             // ExitMenuItem
             // 
             ExitMenuItem.Name = "ExitMenuItem";
-            ExitMenuItem.Size = new Size(180, 26);
+            ExitMenuItem.Size = new Size(224, 26);
             ExitMenuItem.Text = "Exit";
             // 
             // SettingsMenuItem
@@ -392,7 +395,7 @@
             // 
             // ConnectButton
             // 
-            ConnectButton.Location = new Point(12, 403);
+            ConnectButton.Location = new Point(6, 52);
             ConnectButton.Name = "ConnectButton";
             ConnectButton.Size = new Size(94, 39);
             ConnectButton.TabIndex = 27;
@@ -402,7 +405,7 @@
             // 
             // DisconnectButton
             // 
-            DisconnectButton.Location = new Point(112, 402);
+            DisconnectButton.Location = new Point(106, 51);
             DisconnectButton.Name = "DisconnectButton";
             DisconnectButton.Size = new Size(94, 39);
             DisconnectButton.TabIndex = 28;
@@ -412,7 +415,7 @@
             // 
             // ExitButton
             // 
-            ExitButton.Location = new Point(212, 402);
+            ExitButton.Location = new Point(206, 51);
             ExitButton.Name = "ExitButton";
             ExitButton.Size = new Size(94, 39);
             ExitButton.TabIndex = 29;
@@ -431,12 +434,32 @@
             SimulationGroupBox.Controls.Add(FanOnlyCheckBox);
             SimulationGroupBox.Controls.Add(PressureCheckBox);
             SimulationGroupBox.Controls.Add(CoolingCheckBox);
-            SimulationGroupBox.Location = new Point(538, 31);
+            SimulationGroupBox.Location = new Point(383, 38);
             SimulationGroupBox.Name = "SimulationGroupBox";
             SimulationGroupBox.Size = new Size(250, 304);
             SimulationGroupBox.TabIndex = 30;
             SimulationGroupBox.TabStop = false;
             SimulationGroupBox.Text = "Simulation Check Boxes";
+            // 
+            // SimulatedTempLabel
+            // 
+            SimulatedTempLabel.AutoSize = true;
+            SimulatedTempLabel.Location = new Point(17, 200);
+            SimulatedTempLabel.Name = "SimulatedTempLabel";
+            SimulatedTempLabel.Size = new Size(208, 20);
+            SimulatedTempLabel.TabIndex = 39;
+            SimulatedTempLabel.Text = "Simulated Room Temperature";
+            // 
+            // UnitTempNumericUpDown
+            // 
+            UnitTempNumericUpDown.DecimalPlaces = 1;
+            UnitTempNumericUpDown.Increment = new decimal(new int[] { 5, 0, 0, 65536 });
+            UnitTempNumericUpDown.Location = new Point(17, 258);
+            UnitTempNumericUpDown.Minimum = new decimal(new int[] { 40, 0, 0, 0 });
+            UnitTempNumericUpDown.Name = "UnitTempNumericUpDown";
+            UnitTempNumericUpDown.Size = new Size(208, 27);
+            UnitTempNumericUpDown.TabIndex = 38;
+            UnitTempNumericUpDown.Value = new decimal(new int[] { 80, 0, 0, 0 });
             // 
             // SimulationCheckBox
             // 
@@ -448,6 +471,17 @@
             SimulationCheckBox.Text = "Simulation Mode";
             SimulationCheckBox.UseVisualStyleBackColor = true;
             SimulationCheckBox.CheckedChanged += SimulationCheckBox_CheckedChanged;
+            // 
+            // RoomTempNumericUpDown
+            // 
+            RoomTempNumericUpDown.DecimalPlaces = 1;
+            RoomTempNumericUpDown.Increment = new decimal(new int[] { 5, 0, 0, 65536 });
+            RoomTempNumericUpDown.Location = new Point(17, 223);
+            RoomTempNumericUpDown.Minimum = new decimal(new int[] { 40, 0, 0, 0 });
+            RoomTempNumericUpDown.Name = "RoomTempNumericUpDown";
+            RoomTempNumericUpDown.Size = new Size(208, 27);
+            RoomTempNumericUpDown.TabIndex = 37;
+            RoomTempNumericUpDown.Value = new decimal(new int[] { 70, 0, 0, 0 });
             // 
             // HeatRadioButton
             // 
@@ -496,7 +530,7 @@
             // PortsComboBox
             // 
             PortsComboBox.FormattingEnabled = true;
-            PortsComboBox.Location = new Point(12, 368);
+            PortsComboBox.Location = new Point(6, 20);
             PortsComboBox.Name = "PortsComboBox";
             PortsComboBox.Size = new Size(294, 28);
             PortsComboBox.TabIndex = 35;
@@ -507,86 +541,103 @@
             OperatingModeGroupBox.Controls.Add(CoolRadioButton);
             OperatingModeGroupBox.Controls.Add(FanOnCheckBox);
             OperatingModeGroupBox.Controls.Add(OffRadioButton);
-            OperatingModeGroupBox.Controls.Add(ModeStatusLabel);
-            OperatingModeGroupBox.Controls.Add(FanModeLabel);
-            OperatingModeGroupBox.Controls.Add(FanStatusLabel);
-            OperatingModeGroupBox.Controls.Add(HeatStatusLabel);
-            OperatingModeGroupBox.Controls.Add(CoolStatusLabel);
-            OperatingModeGroupBox.Location = new Point(386, 31);
+            OperatingModeGroupBox.Location = new Point(231, 38);
             OperatingModeGroupBox.Name = "OperatingModeGroupBox";
-            OperatingModeGroupBox.Size = new Size(146, 304);
+            OperatingModeGroupBox.Size = new Size(146, 157);
             OperatingModeGroupBox.TabIndex = 36;
             OperatingModeGroupBox.TabStop = false;
             OperatingModeGroupBox.Text = "Operating Modes";
             // 
-            // RoomTempNumericUpDown
+            // TemperatureGroupBox
             // 
-            RoomTempNumericUpDown.DecimalPlaces = 1;
-            RoomTempNumericUpDown.Increment = new decimal(new int[] { 5, 0, 0, 65536 });
-            RoomTempNumericUpDown.Location = new Point(17, 223);
-            RoomTempNumericUpDown.Minimum = new decimal(new int[] { 40, 0, 0, 0 });
-            RoomTempNumericUpDown.Name = "RoomTempNumericUpDown";
-            RoomTempNumericUpDown.Size = new Size(208, 27);
-            RoomTempNumericUpDown.TabIndex = 37;
-            RoomTempNumericUpDown.Value = new decimal(new int[] { 70, 0, 0, 0 });
+            TemperatureGroupBox.Controls.Add(RoomTempLabel);
+            TemperatureGroupBox.Controls.Add(UnitTempLabel);
+            TemperatureGroupBox.Controls.Add(CurrentSetpointLabel);
+            TemperatureGroupBox.Controls.Add(HeatSetpointLabel);
+            TemperatureGroupBox.Controls.Add(CoolSetpointLabel);
+            TemperatureGroupBox.Controls.Add(HeatPlusButton);
+            TemperatureGroupBox.Controls.Add(HeatMinusButton);
+            TemperatureGroupBox.Controls.Add(CoolPlusButton);
+            TemperatureGroupBox.Controls.Add(CoolMinusButton);
+            TemperatureGroupBox.Location = new Point(12, 38);
+            TemperatureGroupBox.Name = "TemperatureGroupBox";
+            TemperatureGroupBox.Size = new Size(213, 304);
+            TemperatureGroupBox.TabIndex = 37;
+            TemperatureGroupBox.TabStop = false;
+            TemperatureGroupBox.Text = "Temp Display And Controls";
             // 
-            // UnitTempNumericUpDown
+            // OperationGroupBox
             // 
-            UnitTempNumericUpDown.DecimalPlaces = 1;
-            UnitTempNumericUpDown.Increment = new decimal(new int[] { 5, 0, 0, 65536 });
-            UnitTempNumericUpDown.Location = new Point(17, 258);
-            UnitTempNumericUpDown.Minimum = new decimal(new int[] { 40, 0, 0, 0 });
-            UnitTempNumericUpDown.Name = "UnitTempNumericUpDown";
-            UnitTempNumericUpDown.Size = new Size(208, 27);
-            UnitTempNumericUpDown.TabIndex = 38;
-            UnitTempNumericUpDown.Value = new decimal(new int[] { 80, 0, 0, 0 });
+            OperationGroupBox.Controls.Add(ModeStatusLabel);
+            OperationGroupBox.Controls.Add(CoolStatusLabel);
+            OperationGroupBox.Controls.Add(FanModeLabel);
+            OperationGroupBox.Controls.Add(FanStatusLabel);
+            OperationGroupBox.Controls.Add(HeatStatusLabel);
+            OperationGroupBox.Location = new Point(231, 201);
+            OperationGroupBox.Name = "OperationGroupBox";
+            OperationGroupBox.Size = new Size(146, 141);
+            OperationGroupBox.TabIndex = 38;
+            OperationGroupBox.TabStop = false;
+            OperationGroupBox.Text = "Operating Status";
             // 
-            // SimulatedTempLabel
+            // GearPictureBox
             // 
-            SimulatedTempLabel.AutoSize = true;
-            SimulatedTempLabel.Location = new Point(17, 200);
-            SimulatedTempLabel.Name = "SimulatedTempLabel";
-            SimulatedTempLabel.Size = new Size(208, 20);
-            SimulatedTempLabel.TabIndex = 39;
-            SimulatedTempLabel.Text = "Simulated Room Temperature";
+            GearPictureBox.Image = (Image)resources.GetObject("GearPictureBox.Image");
+            GearPictureBox.Location = new Point(639, 38);
+            GearPictureBox.Name = "GearPictureBox";
+            GearPictureBox.Size = new Size(149, 149);
+            GearPictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            GearPictureBox.TabIndex = 40;
+            GearPictureBox.TabStop = false;
+            // 
+            // ConnectionGroupBox
+            // 
+            ConnectionGroupBox.Controls.Add(PortsComboBox);
+            ConnectionGroupBox.Controls.Add(FaultStatusLabel);
+            ConnectionGroupBox.Controls.Add(CommStatusLabel);
+            ConnectionGroupBox.Controls.Add(MaintenanceLabel);
+            ConnectionGroupBox.Controls.Add(ConnectButton);
+            ConnectionGroupBox.Controls.Add(DisconnectButton);
+            ConnectionGroupBox.Controls.Add(ExitButton);
+            ConnectionGroupBox.Location = new Point(12, 343);
+            ConnectionGroupBox.Name = "ConnectionGroupBox";
+            ConnectionGroupBox.Size = new Size(776, 97);
+            ConnectionGroupBox.TabIndex = 41;
+            ConnectionGroupBox.TabStop = false;
+            ConnectionGroupBox.Text = "Connections and Ports";
             // 
             // HVACController
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(ConnectionGroupBox);
+            Controls.Add(GearPictureBox);
+            Controls.Add(BennEPictureBox);
+            Controls.Add(OperationGroupBox);
+            Controls.Add(TemperatureGroupBox);
             Controls.Add(OperatingModeGroupBox);
-            Controls.Add(PortsComboBox);
             Controls.Add(SimulationGroupBox);
-            Controls.Add(ExitButton);
-            Controls.Add(DisconnectButton);
-            Controls.Add(ConnectButton);
-            Controls.Add(MaintenanceLabel);
-            Controls.Add(CommStatusLabel);
-            Controls.Add(FaultStatusLabel);
-            Controls.Add(PressureStatusLabel);
-            Controls.Add(SafetyStatusLabel);
-            Controls.Add(CoolMinusButton);
-            Controls.Add(CoolPlusButton);
-            Controls.Add(HeatMinusButton);
-            Controls.Add(HeatPlusButton);
-            Controls.Add(CoolSetpointLabel);
-            Controls.Add(HeatSetpointLabel);
-            Controls.Add(CurrentSetpointLabel);
-            Controls.Add(UnitTempLabel);
-            Controls.Add(RoomTempLabel);
             Controls.Add(ClockLabel);
             Controls.Add(MainMenuStrip);
             Name = "HVACController";
             Text = "HVAC Controller";
+            ((System.ComponentModel.ISupportInitialize)BennEPictureBox).EndInit();
             MainMenuStrip.ResumeLayout(false);
             MainMenuStrip.PerformLayout();
             SimulationGroupBox.ResumeLayout(false);
             SimulationGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)UnitTempNumericUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)RoomTempNumericUpDown).EndInit();
             OperatingModeGroupBox.ResumeLayout(false);
             OperatingModeGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)RoomTempNumericUpDown).EndInit();
-            ((System.ComponentModel.ISupportInitialize)UnitTempNumericUpDown).EndInit();
+            TemperatureGroupBox.ResumeLayout(false);
+            TemperatureGroupBox.PerformLayout();
+            OperationGroupBox.ResumeLayout(false);
+            OperationGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)GearPictureBox).EndInit();
+            ConnectionGroupBox.ResumeLayout(false);
+            ConnectionGroupBox.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -608,8 +659,6 @@
         private Label FanStatusLabel;
         private Label HeatStatusLabel;
         private Label CoolStatusLabel;
-        private Label SafetyStatusLabel;
-        private Label PressureStatusLabel;
         private Label FaultStatusLabel;
         private Label CommStatusLabel;
         private Label MaintenanceLabel;
@@ -643,5 +692,9 @@
         private NumericUpDown RoomTempNumericUpDown;
         private NumericUpDown UnitTempNumericUpDown;
         private Label SimulatedTempLabel;
+        private GroupBox TemperatureGroupBox;
+        private GroupBox OperationGroupBox;
+        private PictureBox GearPictureBox;
+        private GroupBox ConnectionGroupBox;
     }
 }

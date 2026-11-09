@@ -1,6 +1,13 @@
 using System.Globalization;
 using System.IO.Ports;
 
+/*
+Hunter Clezie
+Fall 2026
+RCET 3371
+Datalogger
+github url: https://github.com/hunterclezie-pixel/Datalogger.git
+*/
 
 namespace HVACController
 {
@@ -911,6 +918,11 @@ namespace HVACController
                 boardPort.Dispose();
             }
             catch { }
+        }
+
+        private void ClockLabel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
