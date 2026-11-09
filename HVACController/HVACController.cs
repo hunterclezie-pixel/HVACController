@@ -5,8 +5,8 @@ using System.IO.Ports;
 Hunter Clezie
 Fall 2026
 RCET 3371
-Datalogger
-github url: https://github.com/hunterclezie-pixel/Datalogger.git
+HVAC Controller
+github url: https://github.com/hunterclezie-pixel/HVACController.git
 */
 
 namespace HVACController
