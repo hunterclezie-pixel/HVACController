@@ -185,24 +185,26 @@
             // 
             // CoolPlusButton
             // 
+            CoolPlusButton.BackColor = Color.White;
             CoolPlusButton.ForeColor = Color.FromArgb(244, 121, 32);
             CoolPlusButton.Location = new Point(9, 237);
             CoolPlusButton.Name = "CoolPlusButton";
             CoolPlusButton.Size = new Size(94, 45);
             CoolPlusButton.TabIndex = 9;
             CoolPlusButton.Text = "Cool +";
-            CoolPlusButton.UseVisualStyleBackColor = true;
+            CoolPlusButton.UseVisualStyleBackColor = false;
             CoolPlusButton.Click += CoolPlusButton_Click;
             // 
             // CoolMinusButton
             // 
+            CoolMinusButton.BackColor = Color.White;
             CoolMinusButton.ForeColor = Color.FromArgb(244, 121, 32);
             CoolMinusButton.Location = new Point(109, 237);
             CoolMinusButton.Name = "CoolMinusButton";
             CoolMinusButton.Size = new Size(94, 45);
             CoolMinusButton.TabIndex = 10;
             CoolMinusButton.Text = "Cool -";
-            CoolMinusButton.UseVisualStyleBackColor = true;
+            CoolMinusButton.UseVisualStyleBackColor = false;
             CoolMinusButton.Click += CoolMinusButton_Click;
             // 
             // ModeStatusLabel
@@ -461,6 +463,7 @@
             // 
             // UnitTempNumericUpDown
             // 
+            UnitTempNumericUpDown.BackColor = Color.White;
             UnitTempNumericUpDown.DecimalPlaces = 1;
             UnitTempNumericUpDown.Increment = new decimal(new int[] { 5, 0, 0, 65536 });
             UnitTempNumericUpDown.Location = new Point(17, 258);
@@ -483,6 +486,7 @@
             // 
             // RoomTempNumericUpDown
             // 
+            RoomTempNumericUpDown.BackColor = Color.White;
             RoomTempNumericUpDown.DecimalPlaces = 1;
             RoomTempNumericUpDown.Increment = new decimal(new int[] { 5, 0, 0, 65536 });
             RoomTempNumericUpDown.Location = new Point(17, 223);
