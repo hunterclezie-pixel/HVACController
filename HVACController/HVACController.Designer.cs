@@ -109,7 +109,7 @@
             // ClockLabel
             // 
             ClockLabel.AutoSize = true;
-            ClockLabel.Location = new Point(70, 326);
+            ClockLabel.Location = new Point(13, 118);
             ClockLabel.Name = "ClockLabel";
             ClockLabel.Size = new Size(44, 20);
             ClockLabel.TabIndex = 0;
@@ -146,7 +146,7 @@
             // HeatSetpointLabel
             // 
             HeatSetpointLabel.AutoSize = true;
-            HeatSetpointLabel.Location = new Point(63, 128);
+            HeatSetpointLabel.Location = new Point(63, 143);
             HeatSetpointLabel.Name = "HeatSetpointLabel";
             HeatSetpointLabel.Size = new Size(88, 20);
             HeatSetpointLabel.TabIndex = 5;
@@ -163,7 +163,7 @@
             // 
             // HeatPlusButton
             // 
-            HeatPlusButton.Location = new Point(9, 151);
+            HeatPlusButton.Location = new Point(9, 166);
             HeatPlusButton.Name = "HeatPlusButton";
             HeatPlusButton.Size = new Size(94, 45);
             HeatPlusButton.TabIndex = 7;
@@ -173,7 +173,7 @@
             // 
             // HeatMinusButton
             // 
-            HeatMinusButton.Location = new Point(109, 151);
+            HeatMinusButton.Location = new Point(109, 166);
             HeatMinusButton.Name = "HeatMinusButton";
             HeatMinusButton.Size = new Size(94, 45);
             HeatMinusButton.TabIndex = 8;
@@ -343,13 +343,13 @@
             // SaveSettingsMenuItem
             // 
             SaveSettingsMenuItem.Name = "SaveSettingsMenuItem";
-            SaveSettingsMenuItem.Size = new Size(224, 26);
+            SaveSettingsMenuItem.Size = new Size(180, 26);
             SaveSettingsMenuItem.Text = "Save Settings";
             // 
             // ExitMenuItem
             // 
             ExitMenuItem.Name = "ExitMenuItem";
-            ExitMenuItem.Size = new Size(224, 26);
+            ExitMenuItem.Size = new Size(180, 26);
             ExitMenuItem.Text = "Exit";
             // 
             // SettingsMenuItem
@@ -557,6 +557,7 @@
             TemperatureGroupBox.Controls.Add(CoolSetpointLabel);
             TemperatureGroupBox.Controls.Add(HeatPlusButton);
             TemperatureGroupBox.Controls.Add(HeatMinusButton);
+            TemperatureGroupBox.Controls.Add(ClockLabel);
             TemperatureGroupBox.Controls.Add(CoolPlusButton);
             TemperatureGroupBox.Controls.Add(CoolMinusButton);
             TemperatureGroupBox.Location = new Point(12, 38);
@@ -583,7 +584,7 @@
             // GearPictureBox
             // 
             GearPictureBox.Image = (Image)resources.GetObject("GearPictureBox.Image");
-            GearPictureBox.Location = new Point(639, 38);
+            GearPictureBox.Location = new Point(639, 37);
             GearPictureBox.Name = "GearPictureBox";
             GearPictureBox.Size = new Size(149, 149);
             GearPictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -618,7 +619,6 @@
             Controls.Add(TemperatureGroupBox);
             Controls.Add(OperatingModeGroupBox);
             Controls.Add(SimulationGroupBox);
-            Controls.Add(ClockLabel);
             Controls.Add(MainMenuStrip);
             Name = "HVACController";
             Text = "HVAC Controller";

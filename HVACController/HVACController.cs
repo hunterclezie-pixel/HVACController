@@ -61,9 +61,7 @@ namespace HVACController
         SerialPort boardPort = new SerialPort();
         bool boardConnected = false;
 
-        // Keep this false until the external HVAC wiring is checked.
-        // The code assumes active-HIGH DO1-DO5 outputs in direct mode.
-        // The QY@ isolated outputs can be inverted.
+        // Keep this false until the external HVAC wiring is checked
         bool hardwareOutputsEnabled = false;
         bool boardSearching = false;
         bool autoConnect = true;
@@ -298,7 +296,7 @@ namespace HVACController
             nextTemperatureCheck = DateTime.MinValue;
         }
 
-        // 2°F hysteresis, 5-second fan lead/overrun, and sensor checks.
+        // 2°F hysteresis, 5-second fan lead/overrun, and sensor checks
         void ControlHVAC()
         {
             DateTime now = DateTime.Now;
@@ -452,7 +450,7 @@ namespace HVACController
             }
         }
 
-        // Log only when a new fault appears; do not write every timer tick.
+        // Log only when a new fault appears; do not write every timer tick
         void ShowFault(string message)
         {
             if (message == currentFault)
@@ -479,7 +477,7 @@ namespace HVACController
                 ? selectedPort : "Auto";
         }
 
-        // QY@ ID check from the earlier SerialForm coursework.
+        // QY@ ID check from the earlier SerialForm coursework
         bool VerifyBoard(SerialPort port)
         {
             try
@@ -511,7 +509,7 @@ namespace HVACController
             }
         }
 
-        // Attempts to open a COM port and verify the QY@ board on it.
+        // Attempts to open a COM port and verify the QY@ board on it
         SerialPort TryPort(string name)
         {
             SerialPort port = new SerialPort(name, 9600, Parity.None, 8, StopBits.One);
@@ -531,7 +529,7 @@ namespace HVACController
             return null;
         }
 
-        // Scans all available COM ports to find the QY@ board, returning a SerialPort object if found.
+        // Scans all available COM ports to find the QY@ board, returning a SerialPort object if found
         SerialPort FindBoard()
         {
             try
@@ -558,7 +556,7 @@ namespace HVACController
             return null;
         }
 
-        // Asynchronously searches for the QY@ board and updates the connection state.
+        // Searches for the QY@ board and updates the connection state
         async void SearchForBoard()
         {
             if (closing || boardSearching || boardConnected ||
@@ -598,8 +596,7 @@ namespace HVACController
             UpdateDisplay();
         }
 
-        // Check the Qy@ ID every 10 seconds on the same UI thread as the IO reads.
-        // This prevents two commands from trying to use the COM port at once.
+        // This prevents two commands from trying to use the COM port at once
         void CheckBoard()
         {
             if (closing || !boardConnected || SimulationCheckBox.Checked)
@@ -609,7 +606,7 @@ namespace HVACController
                 DisconnectBoard(true);
         }
 
-        // Disconnects the QY@ board and resets the connection state.
+        // Disconnects the QY@ board and resets the connection state
         void DisconnectBoard(bool unexpected)
         {
             bool wasConnected = boardConnected;
@@ -640,15 +637,15 @@ namespace HVACController
                 ShowFault("");
         }
 
-        // ADC 0 = 40°F and ADC 1023 = 100°F, as required by the assignment.
+        // ADC 0 = 40°F and ADC 1023 = 100°F, as required by the assignment
         double AdcToTemperature(int adc)
         {
             return 40.0 + adc * 60.0 / 1023.0;
         }
 
-        // Read AN1, AN2, and all eight digital input bits in one USB transaction.
-        // 0x53 requests AN1 + AN2 (4 reply bytes).
-        // 0x30 requests the digital input byte (1 reply byte).
+        // Read AN1, AN2, and all eight digital input bits in one USB transaction
+        // 0x53 requests AN1 + AN2 (4 reply bytes)
+        // 0x30 requests the digital input byte (1 reply byte)
         bool ReadHardwareInputs()
         {
             if (!boardConnected || !boardPort.IsOpen)
@@ -685,9 +682,7 @@ namespace HVACController
             }
         }
 
-        // The Qy@ write command uses 0x20 followed by an eight-bit output mask.
-        // This assumes DO1-DO5 are active HIGH and directly connected.
-        // Check the schematic, jumper positions, and isolation before enabling.
+        // The Qy@ write command uses 0x20 followed by an eight-bit output mask
         void WriteHardwareOutputs()
         {
             if (!boardConnected || !hardwareOutputsEnabled)
