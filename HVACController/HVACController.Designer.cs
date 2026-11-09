@@ -163,6 +163,7 @@
             // 
             // HeatPlusButton
             // 
+            HeatPlusButton.ForeColor = Color.FromArgb(244, 121, 32);
             HeatPlusButton.Location = new Point(9, 166);
             HeatPlusButton.Name = "HeatPlusButton";
             HeatPlusButton.Size = new Size(94, 45);
@@ -173,6 +174,7 @@
             // 
             // HeatMinusButton
             // 
+            HeatMinusButton.ForeColor = Color.FromArgb(244, 121, 32);
             HeatMinusButton.Location = new Point(109, 166);
             HeatMinusButton.Name = "HeatMinusButton";
             HeatMinusButton.Size = new Size(94, 45);
@@ -183,6 +185,7 @@
             // 
             // CoolPlusButton
             // 
+            CoolPlusButton.ForeColor = Color.FromArgb(244, 121, 32);
             CoolPlusButton.Location = new Point(9, 237);
             CoolPlusButton.Name = "CoolPlusButton";
             CoolPlusButton.Size = new Size(94, 45);
@@ -193,6 +196,7 @@
             // 
             // CoolMinusButton
             // 
+            CoolMinusButton.ForeColor = Color.FromArgb(244, 121, 32);
             CoolMinusButton.Location = new Point(109, 237);
             CoolMinusButton.Name = "CoolMinusButton";
             CoolMinusButton.Size = new Size(94, 45);
@@ -249,6 +253,7 @@
             // FaultStatusLabel
             // 
             FaultStatusLabel.AutoSize = true;
+            FaultStatusLabel.ForeColor = Color.Black;
             FaultStatusLabel.Location = new Point(306, 70);
             FaultStatusLabel.Name = "FaultStatusLabel";
             FaultStatusLabel.Size = new Size(75, 20);
@@ -325,6 +330,7 @@
             // 
             // MainMenuStrip
             // 
+            MainMenuStrip.BackColor = Color.FromArgb(230, 231, 232);
             MainMenuStrip.ImageScalingSize = new Size(20, 20);
             MainMenuStrip.Items.AddRange(new ToolStripItem[] { FileStripMenuItem, SettingsMenuItem });
             MainMenuStrip.Location = new Point(0, 0);
@@ -395,6 +401,7 @@
             // 
             // ConnectButton
             // 
+            ConnectButton.ForeColor = Color.FromArgb(244, 121, 32);
             ConnectButton.Location = new Point(6, 52);
             ConnectButton.Name = "ConnectButton";
             ConnectButton.Size = new Size(94, 39);
@@ -405,6 +412,7 @@
             // 
             // DisconnectButton
             // 
+            DisconnectButton.ForeColor = Color.FromArgb(244, 121, 32);
             DisconnectButton.Location = new Point(106, 51);
             DisconnectButton.Name = "DisconnectButton";
             DisconnectButton.Size = new Size(94, 39);
@@ -415,6 +423,7 @@
             // 
             // ExitButton
             // 
+            ExitButton.ForeColor = Color.FromArgb(244, 121, 32);
             ExitButton.Location = new Point(206, 51);
             ExitButton.Name = "ExitButton";
             ExitButton.Size = new Size(94, 39);
@@ -611,6 +620,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(230, 231, 232);
             ClientSize = new Size(800, 450);
             Controls.Add(ConnectionGroupBox);
             Controls.Add(GearPictureBox);
